@@ -61,6 +61,9 @@ android {
     buildTypes {
         getByName("release") {
             signingConfig = signingConfigs.getByName("release")
+            // Disable resource shrinking to prevent drawable resources from being removed
+            isShrinkResources = false
+            isMinifyEnabled = false
         }
         getByName("debug") {
             applicationIdSuffix = ".debug"
