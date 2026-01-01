@@ -54,15 +54,10 @@ class SessionManagerImpl extends ValueNotifier<Dio> implements SessionManager {
     if (clientCertificate != null) {
       try {
         final context = SecurityContext()
+          // For PKCS12 (.pfx) files, useCertificateChainBytes includes both
+          // the certificate chain AND the private key, so we don't need to
+          // call usePrivateKeyBytes separately
           ..useCertificateChainBytes(
-            clientCertificate.bytes,
-            password: clientCertificate.passphrase,
-          )
-          ..usePrivateKeyBytes(
-            clientCertificate.bytes,
-            password: clientCertificate.passphrase,
-          )
-          ..setTrustedCertificatesBytes(
             clientCertificate.bytes,
             password: clientCertificate.passphrase,
           );
@@ -74,8 +69,6 @@ class SessionManagerImpl extends ValueNotifier<Dio> implements SessionManager {
         client.httpClientAdapter = adapter;
       } on TlsException catch (e) {
         debugPrint('Failed to load client certificate: $e');
-        debugPrint('This may be due to an incompatible PKCS12 format.');
-        debugPrint('Try re-exporting your certificate with: openssl pkcs12 -export -legacy');
         rethrow;
       }
     }
