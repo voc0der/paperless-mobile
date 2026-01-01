@@ -1,0 +1,1 @@
+* Aktualisieren des Flutter-Submoduls für F-Droid builds

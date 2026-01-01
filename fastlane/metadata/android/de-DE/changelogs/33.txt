@@ -1,0 +1,4 @@
+### Dies ist eine Beta Version und noch work in progress! Diese Version wurde mit paperless-ngx 1.13.0 sowie 1.14.2 getestet.
+* Beheben einiger Fehler, die durch API-Update zustande kamen
+* Berechtigungs-Checks bei wichtigen Funktionen (noch nicht vollständig)
+* Neue Einstellungen für den Standard Dateityp beim Downloaden/Teilen

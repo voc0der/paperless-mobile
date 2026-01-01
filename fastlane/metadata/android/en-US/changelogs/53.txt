@@ -1,0 +1,2 @@
+* New: Show changelogs the first time the app is opened
+* Some minor fixes

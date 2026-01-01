@@ -1,0 +1,5 @@
+* Neue Einstellung um Animationen zu deaktivieren
+* Verbesserte Validierung von Server-Adressen
+* Beheben von Fehlern, durch welche es zu Problemen mit Paperless-ngx 2.x.x kam
+* Weitere, kleinere Fehlerbehebungen
+* Neue Übersetzungen

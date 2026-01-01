@@ -1,0 +1,3 @@
+* Support for URL Redirects
+* Fixed a bug where a grey screen was shown when creating correspondents, document types etc. during document upload
+* Minor bugfixes and visual updates

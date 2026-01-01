@@ -1,0 +1,4 @@
+### Diese Version ist eine Betaversion und enthält neue Features und Umstrukturierungen. Deshalb wird empfohlen, die App neu zu installieren!
+* Neues Feature: Massenbearbeitung von Dokumenten.
+* Neues Feature: Unterstützung für mehrere Accounts und mehrere Instanzen mit schnellem Wechsel zwischen diesen (Achtung: Die in paperless-ngx 1.14.0 neu hinzugefügten Berechtigungen sind hier noch nicht enthalten!)
+* Bugfixes 

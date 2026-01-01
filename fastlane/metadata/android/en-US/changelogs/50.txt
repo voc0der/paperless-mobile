@@ -1,0 +1,2 @@
+* Fixed incorrect localizations of dates and other texts
+* Add discrimination between US and GB English (useful for date input)

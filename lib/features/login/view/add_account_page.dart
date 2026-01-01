@@ -108,9 +108,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
                           vertical: 12,
                         ),
                         ClientCertificateFormField(
-                          initialBytes: widget.initialClientCertificate?.bytes,
-                          initialPassphrase:
-                              widget.initialClientCertificate?.passphrase,
+                          initialValue: widget.initialClientCertificate,
                         ).padded(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,

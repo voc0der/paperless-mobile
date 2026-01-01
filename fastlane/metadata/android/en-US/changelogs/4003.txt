@@ -1,0 +1,2 @@
+* Fixed a bug where tags cannot be found after editing a document
+* Update F-Droid configuration

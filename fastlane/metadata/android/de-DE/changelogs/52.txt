@@ -1,0 +1,3 @@
+* Gespeicherte Ansichten können wieder bearbeitet und erstellt werden
+* Titel von Dokumenten können nun auch leer sein
+* Kleinere Änderungen an Korrespondenten, Dokumenttyp, Speicherpfad und Tag Eingabefeldern

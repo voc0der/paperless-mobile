@@ -1,0 +1,2 @@
+* Fixed a bug where received shared files were not correctly consumed after successful upload
+* Pending files can again be viewed

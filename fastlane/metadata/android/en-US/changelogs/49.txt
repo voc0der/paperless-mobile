@@ -1,0 +1,1 @@
+* Fix bug where app would not login with paperless versions before 1.14.0

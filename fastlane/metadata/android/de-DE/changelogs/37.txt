@@ -1,0 +1,1 @@
+* Beheben eines Fehlers durch welchen Labels nicht korrekt angezeigt wurden

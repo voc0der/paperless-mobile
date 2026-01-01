@@ -1,0 +1,7 @@
+### DISCLAIMER: Major update with possibly breaking changes - a fresh install is highly recommended!
+* Added new home page
+* Tons of bugfixes
+* Improved support for multiple accounts/users
+* Improved handling when sharing files with the app
+* Added new languages
+* Improved notifications

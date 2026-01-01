@@ -1,0 +1,4 @@
+* Neu: App-Logs werden in Dateien geschrieben und können auch direkt in der App eingesehen werden
+* Optimierung der Datums-Eingabe durch neues Eingabemaske
+* Schneller Wechsel zwischen Dokumenten-PDF Ansicht und Bearbeitungsmaske
+* Kleinere Visuelle Anpassungen und Bugfixes

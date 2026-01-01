@@ -1,0 +1,2 @@
+* Fixed bugs which were introduced with the update to paperless-ngx 1.14
+* Small updates to search

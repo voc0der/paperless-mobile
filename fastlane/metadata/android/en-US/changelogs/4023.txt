@@ -1,0 +1,2 @@
+- Minor visual updates
+- Update store assets

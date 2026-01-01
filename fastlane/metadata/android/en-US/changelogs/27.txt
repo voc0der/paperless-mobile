@@ -1,0 +1,5 @@
+* Made ASN selection more flexible
+* Added donation button
+* Added system download notifications
+* Added option to share both archived and original file
+* Minor bugfixes

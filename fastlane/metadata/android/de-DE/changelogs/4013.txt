@@ -1,0 +1,1 @@
+- Beheben eines Fehlers durch welchen Dokumente nicht mehr bearbeitet werden konnten

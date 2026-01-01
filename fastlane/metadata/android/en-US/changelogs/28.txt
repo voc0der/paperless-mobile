@@ -1,0 +1,4 @@
+### This version is a beta and contains new features and some restructurings. Therefore it is highly recommended to perform a fresh installation of the app.
+* New feature: Document bulk edits
+* New feature: Support for multiple accounts and multiple instances with quick switching between them (Note: This does not yet include the new multi-user features introduced in paperless-ngx 1.14.0!)
+* Bugfixes

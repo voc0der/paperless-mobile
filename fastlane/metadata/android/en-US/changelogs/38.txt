@@ -1,0 +1,3 @@
+* Add "None" matching algorithm option
+* Add suggetions for server url when logging in/adding a new account
+* Fix inbox page visual bug

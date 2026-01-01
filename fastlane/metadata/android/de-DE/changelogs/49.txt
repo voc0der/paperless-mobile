@@ -1,0 +1,1 @@
+### Beheben eines Fehlers, durch welchen die App bei Paperless Versionen vor 1.14.0 nicht mehr startete

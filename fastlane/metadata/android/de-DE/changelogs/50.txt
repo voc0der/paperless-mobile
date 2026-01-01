@@ -1,0 +1,2 @@
+* Beheben von inkorrekter Lokalisierung in der App
+* Hinzufügen der Unterscheidung zwischen US und GB Englisch

@@ -1,0 +1,3 @@
+* Saved views can be edited and created again
+* Allow document titles to be empty
+* Small changes to inputs of correspondents, document types, storage paths and tags

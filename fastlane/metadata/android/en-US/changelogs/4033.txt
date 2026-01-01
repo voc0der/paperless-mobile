@@ -1,0 +1,1 @@
+- Fix accidentally hardcoded Theme mode

@@ -1,0 +1,2 @@
+* Neu: Anzeigen von Changelogs beim ersten Appstart mit neuer Version
+* Kleinere Fixes

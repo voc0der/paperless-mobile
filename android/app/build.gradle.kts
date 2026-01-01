@@ -73,6 +73,9 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+
+    // Native OkHttp client for Android KeyChain (mutual TLS with system certs)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
 
 flutter {

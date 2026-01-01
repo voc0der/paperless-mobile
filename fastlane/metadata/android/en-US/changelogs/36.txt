@@ -1,0 +1,2 @@
+* Redesigned the in-app document preview
+* New feature: Printing documents

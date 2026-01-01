@@ -1,0 +1,7 @@
+### DISCLAIMER: Major Update mit potentiellen breaking changes - eine Neuinstallation wird dringend empfohlen!
+* Neue Startseite hinzugefügt
+* Viele Fehlerbehebungen
+* Verbesserte Unterstützung für mehrere Accounts/Benutzer
+* Verbesserte Handhabung beim Teilen von Dateien mit der App
+* Neue Sprachen hinzugefügt
+* Verbesserte Benachrichtigungen

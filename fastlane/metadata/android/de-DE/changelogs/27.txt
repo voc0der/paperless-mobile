@@ -1,0 +1,5 @@
+* Flexiblere ASN Zuweisung
+* Spenden-Option in App Drawer hinzugefügt
+* System Download-Benachrichtigungen
+* Ermöglicht Teilen von original oder archivierten Dokumenten
+* Kleinere Fehlerbehebungen

@@ -1,0 +1,3 @@
+* Hinzufügen des "Keine" Zuweisunsalgorithmus bei Labels
+* Hinzufügen von Vorschlägen für Server-URLs beim Einloggen/Hinzufügen eines neuen Accounts
+* Beheben eines visuellen Fehlers im Posteingang

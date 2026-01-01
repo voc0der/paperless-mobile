@@ -1,0 +1,3 @@
+- Documents (PDFs) can again be viewed in-app!
+- Fix issue with mTLS
+- Some minor bug fixes

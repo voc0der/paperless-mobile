@@ -1,0 +1,4 @@
+* New: App-Logs are written to local files and can also be viewed in-app
+* New and optimized date input fields
+* Quickly switch between editing your document and a PDF-View
+* Minor visual changes and bug fixes

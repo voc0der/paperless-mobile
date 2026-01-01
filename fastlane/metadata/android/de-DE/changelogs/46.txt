@@ -1,0 +1,3 @@
+* Unterstüzung für URL Redirects
+* Beheben eines Fehlers beim Erstellen von Korrespondent, Dokumenttyp etc. während des Uploads (grauer Bildschirm)
+* Kleinere Fehlerbehebungen und visuelle Updates

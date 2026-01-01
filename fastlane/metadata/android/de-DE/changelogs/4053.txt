@@ -1,0 +1,3 @@
+- Dokumente können jetzt wieder in der App betrachtet werden!
+- Beheben eines Problems mit mTLS
+- Kleinere Fehlerbehebungen

@@ -1,0 +1,2 @@
+* Beheben eines Fehlers, durch welchen mit der App geteilte Dateien nach dem Upload nicht korrekt entfernt wurden
+* Ausstehende Dateien können wieder eingesehen werden

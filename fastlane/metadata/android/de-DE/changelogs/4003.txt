@@ -1,0 +1,2 @@
+* Beheben eines Fehlers, durch welchen Tags nach Bearbeitung eines Dokumentes nicht mehr gefunden wurden
+* Aktualisieren der F-Droid Konfiguration
