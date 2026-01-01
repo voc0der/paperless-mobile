@@ -56,12 +56,15 @@ jobs:
           keystore-store-password: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
           release-keystore: ${{ secrets.RELEASE_KEYSTORE }}
           release-keystore-passphrase: ${{ secrets.RELEASE_KEYSTORE_PASSPHRASE }}
+          output-directory: android
+
+      - name: Clean Flutter build cache
+        run: $FLUTTER_ROOT/flutter clean
 
       - name: Get packages and run codegen
         run: |
-          bash install_dependencies_with_submodule.sh
-          bash update_changelogs.sh
-        working-directory: scripts
+          bash scripts/install_dependencies_with_submodule.sh
+          bash scripts/update_changelogs.sh
 
       - name: Setup Fastlane
         uses: ruby/setup-ruby@v1

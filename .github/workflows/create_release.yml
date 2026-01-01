@@ -62,6 +62,9 @@ jobs:
           release-keystore-passphrase: ${{ secrets.RELEASE_KEYSTORE_PASSPHRASE }}
           output-directory: android
 
+      - name: Clean Flutter build cache
+        run: $FLUTTER_ROOT/flutter clean
+
       - name: Get packages and run codegen
         run: |
           bash scripts/install_dependencies_with_submodule.sh
