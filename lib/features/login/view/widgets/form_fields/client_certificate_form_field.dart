@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
@@ -147,8 +148,8 @@ class _ClientCertificateFormFieldState extends State<ClientCertificateFormField>
       return;
     }
 
-    final bytes = await FilePicker.platform.readFile(path: path);
-    if (bytes == null) return;
+    final file = File(path);
+    final bytes = await file.readAsBytes();
 
     field.didChange(ClientCertificate(bytes: bytes, filename: p.basename(path)));
   }
