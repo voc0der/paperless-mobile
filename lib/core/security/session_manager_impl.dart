@@ -52,25 +52,32 @@ class SessionManagerImpl extends ValueNotifier<Dio> implements SessionManager {
     ClientCertificate? clientCertificate,
   }) {
     if (clientCertificate != null) {
-      final context = SecurityContext()
-        ..usePrivateKeyBytes(
-          clientCertificate.bytes,
-          password: clientCertificate.passphrase,
-        )
-        ..useCertificateChainBytes(
-          clientCertificate.bytes,
-          password: clientCertificate.passphrase,
-        )
-        ..setTrustedCertificatesBytes(
-          clientCertificate.bytes,
-          password: clientCertificate.passphrase,
-        );
-      final adapter = IOHttpClientAdapter()
-        ..createHttpClient = () => HttpClient(context: context)
-          ..badCertificateCallback =
-              (X509Certificate cert, String host, int port) => true;
+      try {
+        final context = SecurityContext()
+          ..useCertificateChainBytes(
+            clientCertificate.bytes,
+            password: clientCertificate.passphrase,
+          )
+          ..usePrivateKeyBytes(
+            clientCertificate.bytes,
+            password: clientCertificate.passphrase,
+          )
+          ..setTrustedCertificatesBytes(
+            clientCertificate.bytes,
+            password: clientCertificate.passphrase,
+          );
+        final adapter = IOHttpClientAdapter()
+          ..createHttpClient = () => HttpClient(context: context)
+            ..badCertificateCallback =
+                (X509Certificate cert, String host, int port) => true;
 
-      client.httpClientAdapter = adapter;
+        client.httpClientAdapter = adapter;
+      } on TlsException catch (e) {
+        debugPrint('Failed to load client certificate: $e');
+        debugPrint('This may be due to an incompatible PKCS12 format.');
+        debugPrint('Try re-exporting your certificate with: openssl pkcs12 -export -legacy');
+        rethrow;
+      }
     }
 
     if (baseUrl != null) {
