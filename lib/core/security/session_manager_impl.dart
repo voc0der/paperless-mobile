@@ -52,15 +52,26 @@ class SessionManagerImpl extends ValueNotifier<Dio> implements SessionManager {
     ClientCertificate? clientCertificate,
   }) {
     if (clientCertificate != null) {
+      final bytes = clientCertificate.bytes;
+      final passphrase = clientCertificate.passphrase;
+      final hasPassphrase = passphrase != null && passphrase.isNotEmpty;
       try {
-        final context = SecurityContext()
-          // For PKCS12 (.pfx) files, useCertificateChainBytes includes both
-          // the certificate chain AND the private key, so we don't need to
-          // call usePrivateKeyBytes separately
-          ..useCertificateChainBytes(
-            clientCertificate.bytes,
-            password: clientCertificate.passphrase,
-          );
+        // NOTE: On Android, the private key is configured separately via
+        // usePrivateKey*/usePrivateKeyBytes*. On iOS, useCertificateChain*
+        // is a no-op and the PKCS#12 data passed to usePrivateKey* should
+        // contain both certificate + key.
+        //
+        // Using both calls is safe cross-platform as long as the .pfx actually
+        // contains a private key.
+        final context = SecurityContext();
+
+        if (hasPassphrase) {
+          context.useCertificateChainBytes(bytes, password: passphrase);
+          context.usePrivateKeyBytes(bytes, password: passphrase);
+        } else {
+          context.useCertificateChainBytes(bytes);
+          context.usePrivateKeyBytes(bytes);
+        }
         final adapter = IOHttpClientAdapter()
           ..createHttpClient = () => HttpClient(context: context)
             ..badCertificateCallback =
@@ -68,7 +79,11 @@ class SessionManagerImpl extends ValueNotifier<Dio> implements SessionManager {
 
         client.httpClientAdapter = adapter;
       } on TlsException catch (e) {
-        debugPrint('Failed to load client certificate: $e');
+        debugPrint(
+          'Failed to load client certificate '
+          '(file=${clientCertificate.filename}, bytes=${bytes.length}, '
+          'hasPassphrase=$hasPassphrase): $e',
+        );
         rethrow;
       }
     }
