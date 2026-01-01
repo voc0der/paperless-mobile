@@ -42,16 +42,23 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-          
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.4'
+          channel: 'stable'
+          cache: true
+
       - name: Copy files to build directory
         run: |
           mkdir -p /tmp/build
           cp -R . /tmp/build
 
       - name: Set FLUTTER_ROOT environment variable
-        run: echo "FLUTTER_ROOT=$(pwd)/flutter/bin" >> $GITHUB_ENV
-          
-      - run: $FLUTTER_ROOT/flutter doctor -v
+        run: echo "FLUTTER_ROOT=$(dirname $(which flutter))" >> $GITHUB_ENV
+
+      - run: flutter doctor -v
 
       - name: Setup signing config
         uses: ./.github/actions/setup-android-signing-config
