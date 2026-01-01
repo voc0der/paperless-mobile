@@ -105,6 +105,12 @@ GitHub Secrets for Repository
 Copy and paste these values into your GitHub repository secrets:
 Settings → Secrets and variables → Actions → New repository secret
 
+IMPORTANT: When copying RELEASE_KEYSTORE, make sure it's all on ONE LINE!
+The value below may appear wrapped in your text editor, but it must be
+copied as a continuous string with NO line breaks.
+
+Use the automated script instead: ./scripts/setup_github_secrets.sh
+
 ----------------------------------------
 Secret Name: RELEASE_KEYSTORE
 Secret Value:

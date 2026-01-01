@@ -24,8 +24,8 @@ runs:
   using: "composite"
   steps: 
     - run: |
-        echo "${{ inputs.release-keystore }}" > ${{ inputs.keystore-key-alias }}-keystore.jks.asc
-        gpg --batch --passphrase "${{ inputs.release-keystore-passphrase }}" -d -o app/${{ inputs.keystore-key-alias }}-keystore.jks ${{ inputs.keystore-key-alias }}-keystore.jks.asc
+        echo "${{ inputs.release-keystore }}" | base64 -d > ${{ inputs.keystore-key-alias }}-keystore.jks.gpg
+        gpg --batch --passphrase "${{ inputs.release-keystore-passphrase }}" -d -o app/${{ inputs.keystore-key-alias }}-keystore.jks ${{ inputs.keystore-key-alias }}-keystore.jks.gpg
         echo "storeFile=${{ inputs.keystore-key-alias }}-keystore.jks" >> key.properties
         echo "keyAlias=${{ inputs.keystore-key-alias }}" >> key.properties
         echo "storePassword=${{ inputs.keystore-store-password }}" >> key.properties
