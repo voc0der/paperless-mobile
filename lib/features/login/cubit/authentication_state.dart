@@ -54,6 +54,8 @@ class ClientCertificateRequiredState extends AuthenticationState
     with EquatableMixin {
   final String serverUrl;
   final String username;
+  // Password is kept in state for retry logic but NOT in props
+  // to avoid it appearing in debug logs or equality comparisons
   final String password;
 
   const ClientCertificateRequiredState({
@@ -63,7 +65,8 @@ class ClientCertificateRequiredState extends AuthenticationState
   });
 
   @override
-  List<Object?> get props => [serverUrl, username, password];
+  // Deliberately exclude password from equality comparison for security
+  List<Object?> get props => [serverUrl, username];
 }
 
 class AuthenticationErrorState extends AuthenticationState with EquatableMixin {

@@ -68,6 +68,9 @@ class _AddAccountPageState extends State<AddAccountPage> {
   ReachabilityStatus _reachabilityStatus = ReachabilityStatus.unknown;
   bool _isFormSubmitted = false;
 
+  // Guard to prevent re-prompting on the same login attempt
+  bool _hasPromptedForCertificate = false;
+
   final _pageController = PageController();
   @override
   Widget build(BuildContext context) {
@@ -75,12 +78,27 @@ class _AddAccountPageState extends State<AddAccountPage> {
       listener: (context, state) async {
         // Automatically handle client certificate requirement
         if (state is ClientCertificateRequiredState) {
-          await _handleClientCertificateRequired(
-            context,
-            state.serverUrl,
-            state.username,
-            state.password,
-          );
+          // Guard against prompt loops - only prompt once per login attempt
+          if (!_hasPromptedForCertificate) {
+            _hasPromptedForCertificate = true;
+            await _handleClientCertificateRequired(
+              context,
+              state.serverUrl,
+              state.username,
+              state.password,
+            );
+          } else {
+            // Already prompted and still failing - show error instead of looping
+            if (mounted) {
+              showLocalizedError(
+                context,
+                S.of(context)!.loginPageReachabilityMissingClientCertificateText,
+              );
+            }
+          }
+        } else if (state is AuthenticatedState) {
+          // Reset the guard on successful authentication
+          _hasPromptedForCertificate = false;
         }
       },
       child: Scaffold(
@@ -262,9 +280,15 @@ class _AddAccountPageState extends State<AddAccountPage> {
       return;
     }
 
+    // Normalize URL and extract host for KeyChain picker
+    // Handle URLs without scheme (e.g., "paperless.example.com" -> "https://paperless.example.com")
+    final normalizedUrl = serverUrl.contains('://') ? serverUrl : 'https://$serverUrl';
+    final uri = Uri.parse(normalizedUrl);
+    final host = uri.host;
+
     // Show Android KeyChain picker
     final alias = await AndroidKeyChain.selectClientCertificateAlias(
-      host: Uri.parse(serverUrl).host,
+      host: host.isNotEmpty ? host : null,
     );
 
     if (alias == null || alias.isEmpty) {
@@ -372,6 +396,8 @@ class _AddAccountPageState extends State<AddAccountPage> {
     FocusScope.of(context).unfocus();
     setState(() {
       _isFormSubmitted = true;
+      // Reset cert prompt guard for new login attempt
+      _hasPromptedForCertificate = false;
     });
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final form = _formKey.currentState!.value;

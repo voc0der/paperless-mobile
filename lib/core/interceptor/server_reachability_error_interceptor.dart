@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:paperless_mobile/core/global/os_error_codes.dart';
 import 'package:paperless_mobile/features/login/model/reachability_status.dart';
 
@@ -30,11 +31,16 @@ class ServerReachabilityErrorInterceptor extends Interceptor {
 
     // Detect TLS handshake failures that indicate missing client certificate
     if (error is HandshakeException) {
-      // Common TLS errors when client cert is required but not provided
-      final message = error.message.toLowerCase();
-      if (message.contains('handshake') ||
-          message.contains('tlsv1 alert') ||
-          message.contains('certificate required')) {
+      final message = (error.message ?? '').toLowerCase();
+
+      // Log all handshake failures for debugging
+      debugPrint('TLS handshake failed: ${error.message}');
+
+      // Only match on strong signals that specifically indicate missing client cert
+      // Avoid false positives from general TLS failures (bad server cert, version mismatch, etc.)
+      if (message.contains('certificate required') ||
+          message.contains('tlsv13 alert certificate required') ||
+          message.contains('bad certificate')) {
         return _rejectWithStatus(
           ReachabilityStatus.missingClientCertificate,
           err,
