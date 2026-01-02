@@ -3,6 +3,30 @@ import 'package:paperless_api/paperless_api.dart';
 
 class DioHttpErrorInterceptor extends Interceptor {
   @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    // Some nginx configs convert 400 to 200 with HTML error page
+    // Check if 200 response contains error HTML indicating missing client cert
+    if (response.statusCode == 200) {
+      final data = response.data;
+      if (data is String &&
+          data.contains("No required SSL certificate was sent")) {
+        handler.reject(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+            error: const PaperlessApiException(
+              ErrorCode.missingClientCertificate,
+            ),
+          ),
+        );
+        return;
+      }
+    }
+    super.onResponse(response, handler);
+  }
+
+  @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (err.response?.statusCode == 400) {
       final data = err.response!.data;
