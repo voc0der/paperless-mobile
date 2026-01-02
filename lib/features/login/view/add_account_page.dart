@@ -177,6 +177,15 @@ class _AddAccountPageState extends State<AddAccountPage> {
                                       curve: Curves.easeInOut,
                                     );
                                   });
+                                } else if (status == ReachabilityStatus.missingClientCertificate) {
+                                  // Automatically prompt for client certificate
+                                  debugPrint('Reachability check detected missing client cert - prompting for KeyChain');
+                                  if (!_hasPromptedForCertificate) {
+                                    _hasPromptedForCertificate = true;
+                                    final serverUrl = _formKey.currentState!
+                                        .getRawValue(ServerAddressFormField.fkServerAddress);
+                                    await _handleClientCertificateRequiredFromReachability(serverUrl);
+                                  }
                                 }
                               },
                               icon: _isCheckingConnection
@@ -270,6 +279,72 @@ class _AddAccountPageState extends State<AddAccountPage> {
       ),
       ),
     );
+  }
+
+  Future<void> _handleClientCertificateRequiredFromReachability(String serverUrl) async {
+    // Automatically prompt for Android KeyChain certificate selection during reachability check
+    if (!AndroidKeyChain.isSupported) {
+      // Non-Android platforms - show error message
+      if (mounted) {
+        showLocalizedError(
+          context,
+          S.of(context)!.loginPageReachabilityMissingClientCertificateText,
+        );
+      }
+      return;
+    }
+
+    // Normalize URL and extract host for KeyChain picker
+    final normalizedUrl = serverUrl.contains('://') ? serverUrl : 'https://$serverUrl';
+    final uri = Uri.parse(normalizedUrl);
+    final host = uri.host;
+
+    debugPrint('Prompting for Android KeyChain alias for host: $host');
+
+    // Show Android KeyChain picker
+    final alias = await AndroidKeyChain.selectClientCertificateAlias(
+      host: host.isNotEmpty ? host : null,
+    );
+
+    if (alias == null || alias.isEmpty) {
+      // User cancelled or no cert selected
+      debugPrint('User cancelled KeyChain selection or no alias selected');
+      setState(() {
+        _hasPromptedForCertificate = false;
+      });
+      return;
+    }
+
+    debugPrint('Selected KeyChain alias: $alias');
+
+    // Create client certificate with the selected alias
+    final clientCertificate = ClientCertificate(
+      bytes: Uint8List(0),
+      filename: 'Android KeyChain',
+      androidKeyAlias: alias,
+    );
+
+    // Retry reachability check with the selected certificate
+    final status = await context
+        .read<ConnectivityStatusService>()
+        .isPaperlessServerReachable(serverUrl, clientCertificate);
+
+    setState(() {
+      _reachabilityStatus = status;
+      _hasPromptedForCertificate = false; // Reset for next attempt
+    });
+
+    if (status == ReachabilityStatus.reachable) {
+      // Success! Move to credentials page
+      Future.delayed(1.seconds, () {
+        if (mounted) {
+          _pageController.nextPage(
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        }
+      });
+    }
   }
 
   Future<void> _handleClientCertificateRequired(
