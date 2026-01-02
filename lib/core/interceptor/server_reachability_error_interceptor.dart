@@ -27,6 +27,22 @@ class ServerReachabilityErrorInterceptor extends Interceptor {
       );
     }
     final error = err.error;
+
+    // Detect TLS handshake failures that indicate missing client certificate
+    if (error is HandshakeException) {
+      // Common TLS errors when client cert is required but not provided
+      final message = error.message.toLowerCase();
+      if (message.contains('handshake') ||
+          message.contains('tlsv1 alert') ||
+          message.contains('certificate required')) {
+        return _rejectWithStatus(
+          ReachabilityStatus.missingClientCertificate,
+          err,
+          handler,
+        );
+      }
+    }
+
     if (error is SocketException) {
       final code = error.osError?.errorCode;
       if (code == OsErrorCodes.serverUnreachable.code ||

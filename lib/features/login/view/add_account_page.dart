@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +10,10 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/model/info_message_exception.dart';
+import 'package:paperless_mobile/core/security/android_keychain.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
 import 'package:paperless_mobile/features/login/model/reachability_status.dart';
@@ -68,11 +71,23 @@ class _AddAccountPageState extends State<AddAccountPage> {
   final _pageController = PageController();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text(widget.titleText),
-      ),
+    return BlocListener<AuthenticationCubit, AuthenticationState>(
+      listener: (context, state) async {
+        // Automatically handle client certificate requirement
+        if (state is ClientCertificateRequiredState) {
+          await _handleClientCertificateRequired(
+            context,
+            state.serverUrl,
+            state.username,
+            state.password,
+          );
+        }
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          title: Text(widget.titleText),
+        ),
       body: FormBuilder(
         key: _formKey,
         child: AutofillGroup(
@@ -107,9 +122,8 @@ class _AddAccountPageState extends State<AddAccountPage> {
                           horizontal: 12,
                           vertical: 12,
                         ),
-                        ClientCertificateFormField(
-                          initialValue: widget.initialClientCertificate,
-                        ).padded(),
+                        // Client certificate is now handled automatically when needed
+                        // ClientCertificateFormField hidden from UI
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -226,24 +240,71 @@ class _AddAccountPageState extends State<AddAccountPage> {
           ),
         ),
       ),
+      ),
     );
+  }
+
+  Future<void> _handleClientCertificateRequired(
+    BuildContext context,
+    String serverUrl,
+    String username,
+    String password,
+  ) async {
+    // Automatically prompt for Android KeyChain certificate selection
+    if (!AndroidKeyChain.isSupported) {
+      // Non-Android platforms - show error message
+      if (mounted) {
+        showLocalizedError(
+          context,
+          S.of(context)!.loginPageReachabilityMissingClientCertificateText,
+        );
+      }
+      return;
+    }
+
+    // Show Android KeyChain picker
+    final alias = await AndroidKeyChain.selectClientCertificateAlias(
+      host: Uri.parse(serverUrl).host,
+    );
+
+    if (alias == null || alias.isEmpty) {
+      // User cancelled or no cert selected
+      return;
+    }
+
+    // Create client certificate with the selected alias
+    final clientCertificate = ClientCertificate(
+      bytes: Uint8List(0),
+      filename: 'Android KeyChain',
+      androidKeyAlias: alias,
+    );
+
+    // Automatically retry login with the selected certificate
+    if (mounted) {
+      await context.read<AuthenticationCubit>().login(
+            credentials: LoginFormCredentials(
+              username: username,
+              password: password,
+            ),
+            serverUrl: serverUrl,
+            clientCertificate: clientCertificate,
+          );
+    }
   }
 
   Future<ReachabilityStatus> _updateReachability([String? address]) async {
     setState(() {
       _isCheckingConnection = true;
     });
-    final selectedCertificate =
-        _formKey.currentState?.getRawValue<ClientCertificate>(
-      ClientCertificateFormField.fkClientCertificate,
-    );
+    // Client certificate is now handled automatically when needed,
+    // so we check reachability without it initially
     final status = await context
         .read<ConnectivityStatusService>()
         .isPaperlessServerReachable(
           address ??
               _formKey.currentState!
                   .getRawValue(ServerAddressFormField.fkServerAddress),
-          selectedCertificate,
+          null, // No cert on initial check
         );
     setState(() {
       _isCheckingConnection = false;
@@ -314,10 +375,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
     });
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final form = _formKey.currentState!.value;
-      final clientCertFormModel =
-          form[ClientCertificateFormField.fkClientCertificate]
-              as ClientCertificate?;
-
+      // Client certificate is now handled automatically when needed
       final credentials =
           form[UserCredentialsFormField.fkCredentials] as LoginFormCredentials;
       try {
@@ -326,7 +384,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
           credentials.username!,
           credentials.password!,
           form[ServerAddressFormField.fkServerAddress],
-          clientCertFormModel,
+          null, // Client cert handled automatically
         );
       } on PaperlessApiException catch (error) {
         if (mounted) showErrorMessage(context, error);

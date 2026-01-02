@@ -85,6 +85,34 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
               AuthenticatingStage.persistingLocalUserData));
         },
       );
+    } on DioException catch (error) {
+      // Check if server requires client certificate
+      if (error.error is ReachabilityStatus &&
+          error.error == ReachabilityStatus.missingClientCertificate) {
+        logger.fd(
+          "Server requires client certificate, prompting user...",
+          className: runtimeType.toString(),
+          methodName: 'login',
+        );
+        emit(
+          ClientCertificateRequiredState(
+            serverUrl: serverUrl,
+            username: credentials.username!,
+            password: credentials.password!,
+          ),
+        );
+        return;
+      }
+
+      emit(
+        AuthenticationErrorState(
+          serverUrl: serverUrl,
+          username: credentials.username!,
+          password: credentials.password!,
+          clientCertificate: clientCertificate,
+        ),
+      );
+      rethrow;
     } on PaperlessApiException catch (_) {
       emit(
         AuthenticationErrorState(
