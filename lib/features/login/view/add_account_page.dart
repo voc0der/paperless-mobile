@@ -71,6 +71,9 @@ class _AddAccountPageState extends State<AddAccountPage> {
   // Guard to prevent re-prompting on the same login attempt
   bool _hasPromptedForCertificate = false;
 
+  // Store the selected certificate from reachability check
+  ClientCertificate? _selectedClientCertificate;
+
   final _pageController = PageController();
   @override
   Widget build(BuildContext context) {
@@ -332,6 +335,10 @@ class _AddAccountPageState extends State<AddAccountPage> {
     setState(() {
       _reachabilityStatus = status;
       _hasPromptedForCertificate = false; // Reset for next attempt
+      // Store the certificate for use during login
+      if (status == ReachabilityStatus.reachable) {
+        _selectedClientCertificate = clientCertificate;
+      }
     });
 
     if (status == ReachabilityStatus.reachable) {
@@ -495,7 +502,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
           credentials.username!,
           credentials.password!,
           form[ServerAddressFormField.fkServerAddress],
-          null, // Client cert handled automatically
+          _selectedClientCertificate, // Use cert from reachability check if available
         );
       } on PaperlessApiException catch (error) {
         if (mounted) showErrorMessage(context, error);
