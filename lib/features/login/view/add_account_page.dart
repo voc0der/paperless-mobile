@@ -76,11 +76,19 @@ class _AddAccountPageState extends State<AddAccountPage> {
   Widget build(BuildContext context) {
     return BlocListener<AuthenticationCubit, AuthenticationState>(
       listener: (context, state) async {
+        // Debug logging
+        debugPrint('AddAccountPage BlocListener - State received: ${state.runtimeType}');
+        debugPrint('AddAccountPage BlocListener - State: $state');
+
         // Automatically handle client certificate requirement
         if (state is ClientCertificateRequiredState) {
+          debugPrint('AddAccountPage BlocListener - ClientCertificateRequiredState detected!');
+          debugPrint('AddAccountPage BlocListener - _hasPromptedForCertificate: $_hasPromptedForCertificate');
+
           // Guard against prompt loops - only prompt once per login attempt
           if (!_hasPromptedForCertificate) {
             _hasPromptedForCertificate = true;
+            debugPrint('AddAccountPage BlocListener - Calling _handleClientCertificateRequired...');
             await _handleClientCertificateRequired(
               context,
               state.serverUrl,
@@ -89,6 +97,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
             );
           } else {
             // Already prompted and still failing - show error instead of looping
+            debugPrint('AddAccountPage BlocListener - Already prompted, showing error');
             if (mounted) {
               showLocalizedError(
                 context,
@@ -98,6 +107,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
           }
         } else if (state is AuthenticatedState) {
           // Reset the guard on successful authentication
+          debugPrint('AddAccountPage BlocListener - AuthenticatedState, resetting guard');
           _hasPromptedForCertificate = false;
         }
       },

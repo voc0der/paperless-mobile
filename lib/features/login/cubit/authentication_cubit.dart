@@ -86,6 +86,16 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         },
       );
     } on DioException catch (error) {
+      // Debug logging
+      debugPrint('AuthenticationCubit - DioException caught');
+      debugPrint('AuthenticationCubit - error.error type: ${error.error.runtimeType}');
+      debugPrint('AuthenticationCubit - error.error value: ${error.error}');
+      debugPrint('AuthenticationCubit - Is ReachabilityStatus? ${error.error is ReachabilityStatus}');
+      if (error.error is ReachabilityStatus) {
+        debugPrint('AuthenticationCubit - ReachabilityStatus value: ${error.error}');
+        debugPrint('AuthenticationCubit - Is missingClientCertificate? ${error.error == ReachabilityStatus.missingClientCertificate}');
+      }
+
       // Check if server requires client certificate
       if (error.error is ReachabilityStatus &&
           error.error == ReachabilityStatus.missingClientCertificate) {
@@ -94,6 +104,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
           className: runtimeType.toString(),
           methodName: 'login',
         );
+        debugPrint('AuthenticationCubit - EMITTING ClientCertificateRequiredState');
         emit(
           ClientCertificateRequiredState(
             serverUrl: serverUrl,
@@ -104,6 +115,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         return;
       }
 
+      debugPrint('AuthenticationCubit - Emitting AuthenticationErrorState and rethrowing');
       emit(
         AuthenticationErrorState(
           serverUrl: serverUrl,
